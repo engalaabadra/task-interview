@@ -2,8 +2,9 @@
 namespace App\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Resources\BaseResource;
 
-class TaskResource extends JsonResource
+class TaskResource extends BaseResource
 {
     /**
      * Transform the resource into an array.
@@ -27,7 +28,6 @@ class TaskResource extends JsonResource
             // Fetch all translations for this item
             $translationData = $this->getTranslationData($this->profile->translations, \App\Models\Profile::class);
         }
-
         // Return combined array
         return array_merge($data, ['translations' => $translationData]);
      

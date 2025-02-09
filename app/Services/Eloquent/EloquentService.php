@@ -54,15 +54,17 @@ class EloquentService implements EloquentServiceInterface{
     {
         // Get validated data and filter out 'file' or 'files'
         $data = $request->validated();
-        $enteredData = array_diff_key($data, array_flip(['file','files']));// Filter out 'file' key and either update or create the model item
         // Create the model item
-        $newItem = $model->create($enteredData);
+        $newItem = $model->create($data);
         // create translations for this item //
         if($request->has('translations')){
             //data translations in array (translations) in request
-            $transData = json_decode($request->get('translations'));
-
+            $transData = json_decode($request->get('translations'), true); // true forces it to be an array
             //coverted this data to enter valid into method handleTranslation
+            // $convertedArray = [];
+            // if (!empty($transData)) {
+            //     $convertedArray = array_map(fn($item) => (array) $item, $transData);
+            // }
             $convertedArray = [];
             if(isset($transData)){
                 $convertedArray = array_map(function ($newItem) {
@@ -160,10 +162,7 @@ class EloquentService implements EloquentServiceInterface{
         $inputIds = request()->input('ids', []);
         // If the request is "all", fetch all items in the trash
         if ($inputIds === "all"){
-            $staffs = $model->withoutGlobalScopes()
-                                ->whereDoesntHave('roles', function ($query) {
-                                $query->whereIn('name', ['admin', 'superadmin']);
-                            })->get();
+            $items = $model->withoutGlobalScopes()->get();
         } else {
            // Decode JSON if it's an array of IDs
            $ids = is_array($inputIds) ? $inputIds : json_decode($inputIds, true);
@@ -212,17 +211,12 @@ class EloquentService implements EloquentServiceInterface{
         $inputIds = request()->input('ids', []);// Default to an empty array if null
         // If the request is "all", fetch all items in the trash
         if ($inputIds === "all") {
-            $items = $model->onlyTrashed()->withoutGlobalScopes()
-                                ->whereDoesntHave('roles', function ($query) {
-                                $query->whereIn('name', ['admin', 'superadmin']);
-                            })->get();
+            $items = $model->onlyTrashed()->get();
         } else {
             $ids = json_decode($inputIds);
             if (!is_array($ids) || empty($ids)) return trans('messages.No valid IDs provided');
             // Fetch items without global scopes only items in trash
-            $items = $model->onlyTrashed()->withoutGlobalScopes()->whereDoesntHave('roles', function ($query) {
-                                                $query->whereIn('name', ['admin', 'superadmin']);
-                                            })->whereIn('id', $ids)->get();
+            $items = $model->onlyTrashed()->withoutGlobalScopes()->whereIn('id', $ids)->get();
             }
             if($items->isEmpty()) return 404;
             foreach ($items as $item) {
@@ -266,13 +260,13 @@ class EloquentService implements EloquentServiceInterface{
     /////////////////// For Files ////////////////////////////////
     public function uploadFile($request, $id, $model){
         $data = $request->validated();
-        $staff = $model->find($id);
-        if(!$staff) return 404;
+        $item = $model->find($id);
+        if(!$item) return 404;
         $folderName = modelName($model) . '-images';
-        $this->mediaClass->handleFileUpload($data['file'] , $folderName, $model, $staff);
+        $this->mediaClass->handleFileUpload($data['file'] , $folderName, $model, $item);
         //merge eager loading that it in user model & profile model , because i need all realtions(eagerloading) that it in 2 models 
         $eagerLoading = $model->getEagerLoadingUserProfile();
-        return $eagerLoading ? $staff->load($eagerLoading) : $staff;
+        return $eagerLoading ? $item->load($eagerLoading) : $item;
     }
 
     public function uploadFiles($request, $id, $model){

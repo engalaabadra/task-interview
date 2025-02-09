@@ -1,7 +1,7 @@
 <?php
 namespace App\Services\Translation;
 
-interface TranslationService{
+interface TranslationServiceInterface{
      
     public function createTranslations($translations, $newItem, $model);
     

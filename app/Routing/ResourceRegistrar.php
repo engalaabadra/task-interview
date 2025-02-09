@@ -11,13 +11,12 @@ class ResourceRegistrar extends OriginalRegistrar
      *
      * @var array
      */
-    public $resourceDefaults = ['index', 'create', 'store', 'search', 'export', 'trash', 'restoreAll', 'restore', 'show', 'edit', 'update', 'changeActivate', 'destroyMany', 'forceDelete',  'forceDeleteMany', 'destroy'];
+    public $resourceDefaults = ['index', 'create', 'store', 'search', 'trash', 'restoreAll', 'restore', 'show', 'edit', 'update', 'changeActivate', 'destroyMany', 'forceDelete',  'forceDeleteMany', 'destroy'];
     // add data to the array
     public function registerCustomResource($name, $controller, $options = [])
     {
         // add custom resource methods.
         $this->addResourceSearch($name, $controller, $options);
-        $this->addResourceExport($name, $controller, $options);
         $this->addResourceTrash($name, $controller, $options);
         $this->addResourceRestoreAll($name, $controller, $options);
         $this->addResourceRestore($name, $controller, $options);
@@ -43,22 +42,7 @@ class ResourceRegistrar extends OriginalRegistrar
 
         return $this->router->get($uri, $action);
     }
-     /**
-     * Add the export method for a resourceful route.
-     *
-     * @param  string  $name
-     * @param  string  $controller
-     * @param  array   $options
-     * @return \Illuminate\Support\Facades\Route
-     */
-    public function addResourceexport($name, $controller, $options)
-    {
-        $uri = $this->getResourceUri($name).'/export';
-
-        $action = $this->getResourceAction($name, $controller, 'export', $options);
-
-        return $this->router->get($uri, $action);
-    }
+    
     /**
      * Add the trash method for a resourceful route.
      *

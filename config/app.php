@@ -122,5 +122,7 @@ return [
         'driver' => env('APP_MAINTENANCE_DRIVER', 'file'),
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
-
+    // Other configurations...
+    'supported_languages' => ['ar', 'en', 'fr'], // Add more languages as needed
+    
 ];

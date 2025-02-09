@@ -10,10 +10,10 @@ use App\Scopes\LanguageScope;
 class BaseModel extends Model
 {
     //Accessories
-    // public function getActiveAttribute()
-    // {
-    //     return $this->attributes['active'] ?? null;
-    // }
+    public function getActiveAttribute()
+    {
+        return $this->attributes['active'] ?? null;
+    }
 
     public function getOriginalActiveAttribute()
     {
